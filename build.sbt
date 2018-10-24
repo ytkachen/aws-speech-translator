@@ -6,6 +6,8 @@ scalaVersion := "2.12.7"
 
 lazy val awsSdkV = "1.11.427"
 
+mainClass := Some("com.cisco.speech.TranslateAudio")
+
 libraryDependencies ++= Seq(
   "com.amazonaws" % "aws-java-sdk-s3" % awsSdkV,
   "com.amazonaws" % "aws-java-sdk-transcribe" % awsSdkV,

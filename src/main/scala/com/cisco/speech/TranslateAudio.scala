@@ -14,12 +14,13 @@ import com.amazonaws.services.translate.AmazonTranslateClientBuilder
   */
 object TranslateAudio extends App {
 
-  if (args.length != 2) {
+  if (args.length != 3) {
     println("Invalid input parameters")
   }
 
   val inputAudio =  args(0)
   val outputFile = args(1)
+  val targetLang = args(2)
 
   // create S3 client
   val s3Client = AmazonS3ClientBuilder.defaultClient()
@@ -33,15 +34,13 @@ object TranslateAudio extends App {
 
   println(text)
 
-  val targetLang = "ru"
+  val targetText = new AWSTranslateTextJob(translateClient, "en").translate(text, targetLang)
 
-  val frText = new AWSTranslateTextJob(translateClient, "en").translate(text, targetLang)
-
-  println(frText)
+  println(targetText)
 
   val tLang = LanguageCode.values().filter(l => l.toString.startsWith(targetLang)).head
 
-  val outputAudio = new AWSTextToSpeechJob(ttsClient).synthesizeSpeech(tLang, frText)
+  val outputAudio = new AWSTextToSpeechJob(ttsClient).synthesizeSpeech(tLang, targetText)
 
   Files.copy(outputAudio, Paths.get(outputFile), StandardCopyOption.REPLACE_EXISTING)
   println(s"Written file to $outputFile")
